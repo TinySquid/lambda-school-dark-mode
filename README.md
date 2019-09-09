@@ -1,5 +1,5 @@
 # An extension for Chrome & Firefox
-(If you are looking for the Chrome version, [click here](https://github.com/TinySquid/lstk-darkmode-ext-chrome).
+(If you are looking for the Chrome version, [click here](https://github.com/TinySquid/lstk-darkmode-ext-chrome))
 This project aims to provide a browser extension that will give the Lambda School Training Kit a darkmode. In the future, the ability to customize your own theme and share it is planned.
 
 ## Project Status
