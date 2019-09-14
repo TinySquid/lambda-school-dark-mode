@@ -1,0 +1,41 @@
+.navbar-brand {
+  svg.d-block path.st1 {
+    fill: @lambda-logo-col;
+  }
+}
+
+.docs-sidebar {
+  background-color: @home-sidebar-col;
+
+  .dashboards-link a#dashboards-link {
+    color: @home-link-col;
+    text-decoration: none;
+
+    &:hover {
+      color: darken(@home-link-col, 20%);
+    }
+  }
+}
+
+.content-container {
+  background-color: @home-main-col;
+  color: @home-font-col;
+
+  .course-links a {
+    background-color: @home-tile-col;
+  }
+
+  .course-links a:hover {
+    background-color: darken(@home-tile-col, 10%);
+  }
+
+  .form-links {
+    a {
+      color: @home-link-col;
+
+      &:hover {
+        color: darken(@home-link-col, 20%);
+      }
+    }
+  }
+}
