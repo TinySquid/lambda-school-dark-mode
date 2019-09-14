@@ -1,0 +1,6 @@
+{
+  "watchFolder": "less",
+  "outputFolder": "extension/css",
+  "mainFile": "lambda-dark.less",
+  "minified": true
+}
