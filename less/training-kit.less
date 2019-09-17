@@ -1,9 +1,11 @@
+/*** LAMBDA LOGO FILL COLOR ***/
 .navbar-brand {
   svg.d-block path.st1 {
     fill: @lambda-logo-col;
   }
 }
 
+/*** SIDEBAR STYLE ***/
 .docs-sidebar {
   background-color: @sidebar-col;
 
@@ -17,10 +19,24 @@
   }
 }
 
+/*** TK TOP NAV STYLE ***/
+.sticky-nav {
+  background-color: @sticky-nav-col;
+}
+
+/*** MAIN CONTAINER JUMBOTRON STYLE ***/
+.jumbotron {
+  background-color: @jumbotron-col;
+}
+
+/*** MAIN CONTAINER STYLE ***/
 .content-container {
   background-color: @main-col;
   color: @font-col;
 
+  /*** TRAINING KIT HOME LINKS STYLE ***/
+
+  /*** TK HOME TILE STYLE ***/
   .course-links a {
     background-color: @tile-col;
   }
@@ -28,7 +44,7 @@
   .course-links a:hover {
     background-color: darken(@tile-col, 10%);
   }
-
+  /*** TK HOME FORM LINK STYLE ***/
   .form-links {
     a {
       color: @link-col;
