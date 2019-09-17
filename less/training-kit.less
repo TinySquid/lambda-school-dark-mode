@@ -77,32 +77,63 @@
     }
   }
 
+  /*** PRO TIP STYLING ***/
+  .alert.alert-warning {
+    color: @font-col;
+    background-color: #645423;
+    border-color: #5b3d1e;
+
+    /*** SOURCE STYLE ***/
+    .blockquote-footer {
+      color: @font-col;
+    }
+  }
+
+  /*** CODE HIGHLIGHT STYLING ***/
   .highlight {
+    //Color for code background
     background-color: @jumbotron-col;
 
+    //Color for text not in spans (used in the HTML format)
     pre code {
       color: @font-col;
     }
 
+    /*
+    From what I've gathered, these are probably generated.
+    Basically each word or grouping has a class that gives it a specific color. The only way
+    to override is to find the specific class (inspect) and change it here.
+    */
+
+    //Seems to affect flex properties
     span.n {
       color: @font-col;
     }
 
+    //Seems to be curly brackets and semicolons
     span.p {
       color: yellow;
     }
 
+    //Seems to affect CSS highlighting secondary keywords in a property / value pair 
     span.nb {
       color: dodgerblue;
     }
 
+    //Seems to affect CSS highlighting tertiary keywords in a property / value pair 
     span.no {
       color: lightgreen;
     }
 
+    //Seems to affect HTML tags mainly.
     span.nt {
       color: #0f97fd;
     }
+  }
+
+  //Goals containers
+  .mark.mb-3.p-2 {
+    background-color: @jumbotron-col;
   }
 
   /*** DASHBOARDS LINK FOR MOBILE ***/
