@@ -15,7 +15,7 @@ Go to the release section.
 
 ![Installation Step 1][dev-install-p1]
 #
-Download the zip file and extract.
+Download the LATEST dev version zip file and extract.
 
 ![Installation Step 2][dev-install-p2]
 #
