@@ -34,16 +34,27 @@
   background-color: @main-col;
   color: @font-col;
 
-  /*** TRAINING KIT HOME LINKS STYLE ***/
+  a {
+    color: @link-col-alt;
+    text-decoration: none;
 
+    &:hover {
+      color: @link-hover-col-alt;
+    }
+  }
+
+  /*** TRAINING KIT HOME LINKS STYLE ***/
   /*** TK HOME TILE STYLE ***/
   .course-links a {
+    color: @tile-text-col;
     background-color: @tile-col;
   }
 
   .course-links a:hover {
+    color: @tile-text-col;
     background-color: @tile-hover-col;
   }
+  
   /*** TK HOME FORM LINK STYLE ***/
   .form-links {
     a {
