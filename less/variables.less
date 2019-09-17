@@ -7,13 +7,16 @@
 If you want to make changes to these, double check your colors @ https://contrastchecker.com/
 */
 
-/*** BACKGROUND COLORS ***/
+/***LAMBDA SVG LOGO FILL COLOR ***/
 @lambda-logo-col: firebrick;
+
+/*** BACKGROUND COLORS ***/
+@default-bg: #121212;
 
 /*** CONTAINER COLORS ***/
 @sidebar-col: #110f1a;
-@main-col: #121212;
-@sticky-nav-col: #121212;
+@main-col: @default-bg;
+@sticky-nav-col: @default-bg;
 @jumbotron-col: #1a1a1a;
 
 /*** FONT COLORS ***/
@@ -21,4 +24,10 @@ If you want to make changes to these, double check your colors @ https://contras
 
 /*** LINK COLORS ***/
 @link-col: #f92626;
+@link-hover-col: darken(@link-col, 20%);
+
+@link-col-alt: #005180;
+@link-hover-col-alt:darken(#005180, 20%);
+
 @tile-col: #005180;
+@tile-hover-col: darken(@tile-col, 10%);
