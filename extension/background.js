@@ -2,6 +2,9 @@
 const TITLE_APPLY = "Enable Darkmode";
 const TITLE_REMOVE = "Disable Darkmode";
 
+//CSS location
+const CSS_DARKMODE = "css/lambda-dark.css";
+
 //Global var for managing extension state across tabs and pages.
 let isEnabled = false;
 
@@ -35,7 +38,7 @@ function toggleCSS(tab) {
 function enableCSS(tab) {
   browser.pageAction.setIcon({ tabId: tab.id, path: "icons/on.svg" });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_REMOVE });
-  browser.tabs.insertCSS({ file: "css/lambda-dark.min.css" });
+  browser.tabs.insertCSS({ file: CSS_DARKMODE });
   isEnabled = true;
 }
 
@@ -43,7 +46,7 @@ function enableCSS(tab) {
 function disableCSS(tab) {
   browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
-  browser.tabs.removeCSS({ file: "css/lambda-dark.min.css" });
+  browser.tabs.removeCSS({ file: CSS_DARKMODE });
   isEnabled = false;
 }
 
