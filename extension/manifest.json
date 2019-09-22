@@ -16,7 +16,8 @@
   },
   "permissions": [
     "*://learn.lambdaschool.com/*",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "page_action": {
     "default_icon": "icons/off.svg",
