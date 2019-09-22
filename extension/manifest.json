@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Lambda School Darkmode",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Gives the Lambda School Training Kit a darkmode.",
   "icons": {
     "48": "icons/lambda-48.png",
@@ -9,8 +9,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "{c0325277-c293-4acf-8439-f6b573e58ac1}",
-      "strict_min_version": "57"
+      "id": "{c0325277-c293-4acf-8439-f6b573e58ac1}"
     }
   },
   "permissions": [
