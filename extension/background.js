@@ -1,32 +1,36 @@
-const CSS = "body { border: 20px solid red; }";
-const TITLE_APPLY = "Apply CSS";
-const TITLE_REMOVE = "Remove CSS";
+const TITLE_APPLY = "Enable Darkmode";
+const TITLE_REMOVE = "Disable Darkmode";
 
-/*
-Toggle CSS: based on the current title, insert or remove the CSS.
-Update the page action's title and icon to reflect its state.
-*/
+//This will ensure that our state survives between page changes & tabs
+let isEnabled = false;
+
+//Toggle CSS based on extension 'isEnabled' boolean.
 function toggleCSS(tab) {
-
-  function gotTitle(title) {
-    if (title === TITLE_APPLY) {
-      browser.pageAction.setIcon({ tabId: tab.id, path: "icons/on.svg" });
-      browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_REMOVE });
-      browser.tabs.insertCSS({ code: CSS });
-    } else {
-      browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
-      browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
-      browser.tabs.removeCSS({ code: CSS });
-    }
+  if (isEnabled) {
+    disableCSS(tab);
+  } else {
+    enableCSS(tab);
   }
+}
 
-  var gettingTitle = browser.pageAction.getTitle({ tabId: tab.id });
-  gettingTitle.then(gotTitle);
+//Inserts darkmode CSS, updates 'isEnabled' state.
+function enableCSS(tab) {
+  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/on.svg" });
+  browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_REMOVE });
+  browser.tabs.insertCSS({ file: "css/lambda-dark.min.css" });
+  isEnabled = true;
+}
+
+//Removes darkmode CSS, updates 'isEnabled' state.
+function disableCSS(tab) {
+  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
+  browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
+  browser.tabs.removeCSS({ file: "css/lambda-dark.min.css" });
+  isEnabled = false;
 }
 
 /*
-Initialize the page action: set icon and title, then show.
-Only operates on tabs whose URL's protocol is applicable.
+Initialize page action by setting icon and title, then call pageAction.show.
 */
 function initializePageAction(tab) {
   browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
@@ -41,6 +45,9 @@ var matchingTabs = browser.tabs.query({ url: "*://learn.lambdaschool.com/*" });
 matchingTabs.then((tabs) => {
   for (let tab of tabs) {
     initializePageAction(tab);
+    if (isEnabled) {
+      enableCSS(tab);
+    }
   }
 });
 
@@ -50,10 +57,11 @@ Each time a tab is updated, reset the page action for that tab only if it's url 
 browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     initializePageAction(tab);
+    if (isEnabled) {
+      enableCSS(tab);
+    }
   }
 });
 
-/*
-Toggle CSS when the page action is clicked.
-*/
+//Toggle CSS when the page action is clicked.
 browser.pageAction.onClicked.addListener(toggleCSS);
