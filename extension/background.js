@@ -4,6 +4,19 @@ const TITLE_REMOVE = "Disable Darkmode";
 //This will ensure that our state survives between page changes & tabs
 let isEnabled = false;
 
+function saveState(state) {
+  browser.storage.local.set({
+    'isEnabled': state
+  });
+}
+
+function loadState() {
+  let storage = browser.storage.local.get('isEnabled');
+  storage.then((data) => {
+    isEnabled = data.isEnabled;
+  })
+}
+
 //Toggle CSS based on extension 'isEnabled' boolean.
 function toggleCSS(tab) {
   if (isEnabled) {
@@ -11,6 +24,8 @@ function toggleCSS(tab) {
   } else {
     enableCSS(tab);
   }
+  //Update extension state
+  saveState(isEnabled);
 }
 
 //Inserts darkmode CSS, updates 'isEnabled' state.
@@ -36,6 +51,7 @@ function initializePageAction(tab) {
   browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
   browser.pageAction.show(tab.id);
+  loadState();
 }
 
 /*
