@@ -1,4 +1,4 @@
-{
+﻿{
   "manifest_version": 2,
   "name": "Lambda School Darkmode",
   "version": "2.0.0",
@@ -10,8 +10,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "{c0325277-c293-4acf-8439-f6b573e58ac1}",
-      "strict_min_version": "52",
-      "strict_max_version": "*"
+      "strict-min-version": "57"
     }
   },
   "permissions": [
