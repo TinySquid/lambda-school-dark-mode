@@ -1,20 +1,31 @@
 {
   "manifest_version": 2,
   "name": "Lambda TK Dark Mode",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A Firefox extension that gives the Lambda School Training Kit a darkmode.",
   "icons": {
     "48": "icons/lambda-48.png",
     "96": "icons/lambda-96.png"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://learn.lambdaschool.com/*"
-      ],
-      "css": [
-        "/css/lambda-dark.min.css"
-      ]
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{c0325277-c293-4acf-8439-f6b573e58ac1}",
+      "strict_min_version": "48",
+      "strict_max_version": "*"
     }
-  ]
+  },
+  "permissions": [
+    "*://learn.lambdaschool.com/*",
+    "tabs"
+  ],
+  "page_action": {
+    "default_icon": "icons/off.svg",
+    "default_title": "Lambda Darkmode",
+    "browser_style": true
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
 }
