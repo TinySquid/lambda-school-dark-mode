@@ -10,7 +10,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "{c0325277-c293-4acf-8439-f6b573e58ac1}",
-      "strict_min_version": "48",
+      "strict_min_version": "52",
       "strict_max_version": "*"
     }
   },
@@ -23,6 +23,9 @@
     "default_icon": "icons/off.svg",
     "default_title": "Lambda School Darkmode",
     "browser_style": true
+  },
+  "options_ui": {
+    "page": "options/options.html"
   },
   "background": {
     "scripts": [
