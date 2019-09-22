@@ -1,15 +1,18 @@
+//Icon hover text
 const TITLE_APPLY = "Enable Darkmode";
 const TITLE_REMOVE = "Disable Darkmode";
 
-//This will ensure that our state survives between page changes & tabs
+//Global var for managing extension state across tabs and pages.
 let isEnabled = false;
 
+//Saves the state into browser storage.
 function saveState(state) {
   browser.storage.local.set({
     'isEnabled': state
   });
 }
 
+//Loads the 'isEnabled' property from browser extension storage
 function loadState() {
   let storage = browser.storage.local.get('isEnabled');
   storage.then((data) => {
