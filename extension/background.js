@@ -48,10 +48,18 @@ function disableCSS(tab) {
 Initialize page action by setting icon and title, then call pageAction.show.
 */
 function initializePageAction(tab) {
-  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
-  browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
-  browser.pageAction.show(tab.id);
+  //Get ext state first.
   loadState();
+
+  //Set or remove CSS based on state.
+  if (isEnabled) {
+    enableCSS(tab);
+  } else {
+    disableCSS(tab);
+  }
+
+  //Show page action icon.
+  browser.pageAction.show(tab.id);
 }
 
 /*
@@ -61,9 +69,6 @@ var matchingTabs = browser.tabs.query({ url: "*://learn.lambdaschool.com/*" });
 matchingTabs.then((tabs) => {
   for (let tab of tabs) {
     initializePageAction(tab);
-    if (isEnabled) {
-      enableCSS(tab);
-    }
   }
 });
 
@@ -73,9 +78,6 @@ Each time a tab is updated, reset the page action for that tab only if it's url 
 browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     initializePageAction(tab);
-    if (isEnabled) {
-      enableCSS(tab);
-    }
   }
 });
 
