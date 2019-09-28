@@ -1,0 +1,108 @@
+.navbar-brand svg.d-block path.st1 {
+  fill: firebrick !important;
+}
+.docs-sidebar {
+  background-color: #110f1a !important;
+}
+.docs-sidebar .dashboards-link a#dashboards-link {
+  color: #f92626 !important;
+  text-decoration: none !important;
+}
+.docs-sidebar .dashboards-link a#dashboards-link:hover {
+  color: #b40505 !important;
+}
+
+.sticky-nav {
+  background-color: #121212 !important;
+}
+.sticky-nav .section-nav > .toc-entry.toc-h2 a {
+  color: #f1f1f1 !important;
+  opacity: 1 !important;
+}
+.sticky-nav .section-nav > .toc-entry.toc-h2 a:hover {
+  color: #bebebe !important;
+}
+
+.jumbotron {
+  background-color: #1a1a1a !important;
+}
+
+.content-container {
+  background-color: #121212 !important;
+  color: #ebebeb !important;
+}
+.content-container a {
+  color: #0092e7 !important;
+  text-decoration: none !important;
+}
+.content-container a:hover {
+  color: #0072b4 !important;
+}
+.content-container .course-links a {
+  color: #ebebeb !important;
+  background-color: #005180 !important;
+}
+.content-container .course-links a:hover {
+  color: #ebebeb !important;
+  background-color: #00314d !important;
+}
+.content-container .form-links a {
+  color: #f92626 !important;
+}
+.content-container .form-links a:hover {
+  color: #b40505 !important;
+}
+.content-container .alert.alert-warning {
+  color: #ebebeb !important;
+  background-color: #645423 !important;
+  border-color: #5b3d1e !important;
+}
+.content-container .alert.alert-warning .blockquote-footer {
+  color: #ebebeb !important;
+}
+.content-container .highlight {
+  background-color: #1a1a1a !important;
+}
+.content-container .highlight pre code {
+  color: #ebebeb !important;
+}
+.content-container .highlight span.n {
+  color: #ebebeb !important;
+}
+.content-container .highlight span.p {
+  color: yellow !important;
+}
+.content-container .highlight span.nb {
+  color: dodgerblue !important;
+}
+.content-container .highlight span.no {
+  color: lightgreen !important;
+}
+.content-container .highlight span.nt {
+  color: #0f97fd !important;
+}
+.content-container .highlight span.o {
+  color: yellow !important;
+}
+.content-container .highlight span.kd {
+  color: #0ed4db !important;
+}
+.content-container .highlight span.k {
+  color: #e40000 !important;
+}
+.content-container .highlight span.kc {
+  color: #e40000 !important;
+}
+.content-container .highlight span.s1 {
+  color: orange !important;
+}
+.content-container .mark.mb-3.p-2 {
+  background-color: #1a1a1a !important;
+}
+.content-container .dashboards-link-mobile a#dashboards-link-mobile {
+  color: #f92626 !important;
+  text-decoration: none !important;
+}
+.content-container .dashboards-link-mobile a#dashboards-link-mobile:hover {
+  color: #b40505 !important;
+}

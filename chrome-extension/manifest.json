@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Lambda School Darkmode",
+  "version": "1.0",
+  "description": "Gives the Lambda School Training Kit a darkmode.",
+  "permissions": [
+    "*://learn.lambdaschool.com/*",
+    "tabs",
+    "storage"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "page_action": {
+    "default_icon": "icons/lambda-48.png",
+    "default_title": "Lambda School Darkmode"
+  }
+}
