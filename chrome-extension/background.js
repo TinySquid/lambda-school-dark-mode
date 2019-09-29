@@ -14,7 +14,7 @@ const state = (function () {
       chrome.storage.local.set({
         'isEnabled': newState
       });
-
+      iState = newState;
       console.log(`New state saved: ${newState}`);
     },
 
@@ -45,17 +45,16 @@ chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
     if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
 
+      //Enable dark mode on state bool value.
       if (state.get()) {
         enableCSS(tab.id);
-        console.log('init: enabled dark mode for tab ', tab.id);
+        console.log('TabQuery: Enabled dark mode for tab ', tab.id);
       }
 
       //Enable page action for tracked tab.
       showPageAction(tab.id);
 
-      console.log(`Existing tab added to tracker: (tab) ${tab.id}.`);
-    } else {
-      chrome.pageAction.hide(tab.id);
+      console.log(`New tab added to tracker: (tab) ${tab.id}. (TabQuery)`);
     }
   }
   console.log(`tabTracker: `, tabTracker);
@@ -68,10 +67,11 @@ chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
 function toggleCSS(tab) {
   console.log(`pageAction clicked on tabId: ${tab.id}, state: ${state.get()}`);
   if (state.get()) {
-    enableCSS(tab.id);
-  } else {
     disableCSS(tab.id);
+  } else {
+    enableCSS(tab.id);
   }
+  console.log(`pageAction cb complete. state: ${state.get()}.`);
 }
 
 /**
@@ -79,8 +79,6 @@ function toggleCSS(tab) {
  * @param {integer} tabId - Inserts the dark mode style sheet. 
  */
 function enableCSS(tabId) {
-  console.log(`Enabled dark mode on tab ${tabId}.`);
-
   //Change extension icon and title in toolbar.
   chrome.pageAction.setIcon({ 'tabId': tabId, 'path': "icons/on.png" });
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_REMOVE });
@@ -93,6 +91,10 @@ function enableCSS(tabId) {
 
   //Extension was enabled for a tab, so enable for all tabs.
   state.save(true);
+
+  //Update tracked tab.
+  let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
+  tabTracker[tabIdx].state = state.get();
 }
 
 /**
@@ -106,6 +108,10 @@ function disableCSS(tabId) {
 
   //Extension was disabled for a tab, so disable for all tabs.
   state.save(false);
+
+  //Update tracked tab.
+  let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
+  tabTracker[tabIdx].state = state.get();
 
   //Because Chrome doesn't have a .removeCSS method, we will just reload the tab to trigger the onUpdated listener.
   chrome.tabs.reload(tabId);
@@ -134,7 +140,10 @@ chrome.tabs.onCreated.addListener(tab => {
     if (state.get()) {
       enableCSS(tab.id);
     }
+    console.log(`tabTracker: `, tabTracker);
   }
+
+
 })
 
 chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
@@ -147,31 +156,34 @@ chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
 
     if (state.get()) {
       enableCSS(tab.id);
+      console.log('Enabled dark mode (onUpdated)');
     }
+
+    showPageAction(tab.id);
+
+    console.log(`tabTracker: `, tabTracker);
   }
-  // if (tabTracker.includes(tab.id)) {
-  //   loadState();
-  //   console.log(`Tracked tab update event: (tab) ${tab.id}.`);
-  //   showPageAction(tab.id);
-  // } else if (tab.url.search("learn.lambdaschool.com") !== -1) {
-  //   loadState();
-  //   console.log(`Existing tab navigated to tracked site: (tab) ${tab.id}.`);
-  //   showPageAction(tab.id);
-  // }
 });
 
 chrome.tabs.onHighlighted.addListener(highlightInfo => {
   let tabId = highlightInfo.tabIds[0];
-
-  if (tabTracker.findIndex(({ id }) => id === tabId) >= 0) {
-    if (state.get()) {
+  let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
+  if (tabIdx >= 0) {
+    if (state.get() && tabTracker[tabIdx].state) {
       enableCSS(tabId);
+    } else if (state.get() === true && tabTracker[tabIdx].state === false) {
+      enableCSS(tabId);
+    } else if (state.get() === false && tabTracker[tabIdx].state === true) {
+      disableCSS(tabId);
+    } else {
+      console.log(`State not changed.`);
     }
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   tabTracker = tabTracker.filter(tab => tab.id !== tabId);
+  console.log(`tabTracker: `, tabTracker);
 });
 
 chrome.pageAction.onClicked.addListener(toggleCSS);
