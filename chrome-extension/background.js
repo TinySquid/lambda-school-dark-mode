@@ -1,6 +1,10 @@
-//Icon hover text
-const TITLE_APPLY = "Enable Darkmode";
-const TITLE_REMOVE = "Disable Darkmode";
+//pageAction icon state
+const ICON_ON = "icons/lambda-48.png";
+const ICON_OFF = "icons/lambda-48-off.png";
+
+//pageAction hover text
+const TITLE_APPLY = "Lambda School Darkmode (off)";
+const TITLE_REMOVE = "Lambda School Darkmode (on)";
 
 //CSS location
 const CSS_DARK_MODE = "css/lambda-dark.css";
@@ -72,7 +76,7 @@ function toggleCSS(tab) {
  */
 function enableCSS(tabId) {
   //Change extension icon and title in toolbar.
-  chrome.pageAction.setIcon({ 'tabId': tabId, 'path': "icons/on.png" });
+  chrome.pageAction.setIcon({ 'tabId': tabId, 'path': ICON_ON });
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_REMOVE });
 
   //Insert our dark mode style sheet.
@@ -95,7 +99,7 @@ function enableCSS(tabId) {
  */
 function disableCSS(tabId) {
   //Change extension icon and title in toolbar.
-  chrome.pageAction.setIcon({ 'tabId': tabId, 'path': "icons/off.png" });
+  chrome.pageAction.setIcon({ 'tabId': tabId, 'path': ICON_OFF });
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_APPLY });
 
   //Extension was disabled for a tab, so disable for all tabs.
