@@ -3,7 +3,7 @@ const TITLE_APPLY = "Enable Darkmode";
 const TITLE_REMOVE = "Disable Darkmode";
 
 //CSS location
-const CSS_PATH = "css/lambda-dark.css";
+const CSS_DARK_MODE = "css/lambda-dark.css";
 
 //Singleton for extension state (enabled/disabled)
 const state = (function () {
@@ -15,13 +15,11 @@ const state = (function () {
         'isEnabled': newState
       });
       iState = newState;
-      console.log(`New state saved: ${newState}`);
     },
 
     load() {
       chrome.storage.local.get('isEnabled', data => {
         iState = data.isEnabled;
-        console.log(`Loaded extension state (${data.isEnabled}) from storage.`);
       });
     },
 
@@ -48,16 +46,12 @@ chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
       //Enable dark mode on state bool value.
       if (state.get()) {
         enableCSS(tab.id);
-        console.log('TabQuery: Enabled dark mode for tab ', tab.id);
       }
 
       //Enable page action for tracked tab.
       showPageAction(tab.id);
-
-      console.log(`New tab added to tracker: (tab) ${tab.id}. (TabQuery)`);
     }
   }
-  console.log(`tabTracker: `, tabTracker);
 });
 
 /**
@@ -65,13 +59,11 @@ chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
  * @param {object} tab - Toggles our CSS for the tab in which the extension icon was clicked. 
  */
 function toggleCSS(tab) {
-  console.log(`pageAction clicked on tabId: ${tab.id}, state: ${state.get()}`);
   if (state.get()) {
     disableCSS(tab.id);
   } else {
     enableCSS(tab.id);
   }
-  console.log(`pageAction cb complete. state: ${state.get()}.`);
 }
 
 /**
@@ -84,7 +76,7 @@ function enableCSS(tabId) {
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_REMOVE });
 
   //Insert our dark mode style sheet.
-  chrome.tabs.insertCSS({ file: CSS_PATH });
+  chrome.tabs.insertCSS({ file: CSS_DARK_MODE });
 
   //Enable page action for tracked tab.
   showPageAction(tabId);
@@ -118,7 +110,6 @@ function disableCSS(tabId) {
 
   //Enable page action for tracked tab.
   showPageAction(tabId);
-
 }
 
 /**
@@ -134,40 +125,34 @@ chrome.tabs.onCreated.addListener(tab => {
     state.load();
     if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
-
-      console.log(`New tab added to tracker: (tab) ${tab.id}. (onCreated)`);
     }
     if (state.get()) {
       enableCSS(tab.id);
     }
-    console.log(`tabTracker: `, tabTracker);
   }
-
-
-})
+});
 
 chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     state.load();
     if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
-      console.log(`New tab added to tracker: (tab) ${tab.id}. (onUpdated)`);
     }
 
     if (state.get()) {
       enableCSS(tab.id);
-      console.log('Enabled dark mode (onUpdated)');
     }
 
     showPageAction(tab.id);
-
-    console.log(`tabTracker: `, tabTracker);
   }
 });
 
 chrome.tabs.onHighlighted.addListener(highlightInfo => {
   let tabId = highlightInfo.tabIds[0];
   let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
+
+  state.load();
+
   if (tabIdx >= 0) {
     if (state.get() && tabTracker[tabIdx].state) {
       enableCSS(tabId);
@@ -176,14 +161,13 @@ chrome.tabs.onHighlighted.addListener(highlightInfo => {
     } else if (state.get() === false && tabTracker[tabIdx].state === true) {
       disableCSS(tabId);
     } else {
-      console.log(`State not changed.`);
+      //Do nothing.
     }
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   tabTracker = tabTracker.filter(tab => tab.id !== tabId);
-  console.log(`tabTracker: `, tabTracker);
 });
 
 chrome.pageAction.onClicked.addListener(toggleCSS);
