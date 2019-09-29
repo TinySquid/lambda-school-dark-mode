@@ -10,6 +10,10 @@ const TITLE_REMOVE = "Lambda School Darkmode (on)";
 const CSS_DARK_MODE = "css/lambda-dark.css";
 
 //Singleton for extension state (enabled/disabled)
+/*
+  A Singleton Pattern restricts the instantiation of a class to one "single" instance.
+  In JS, const will prevent changing the state, and making it a closure inside of an IIFE means it can never be re-defined or instantiated again.
+*/
 const state = (function () {
   let iState = false;
 
@@ -88,7 +92,7 @@ function enableCSS(tabId) {
   //Extension was enabled for a tab, so enable for all tabs.
   state.save(true);
 
-  //Update tracked tab.
+  //Update tracked tab state property.
   let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
   tabTracker[tabIdx].state = state.get();
 }
@@ -105,7 +109,7 @@ function disableCSS(tabId) {
   //Extension was disabled for a tab, so disable for all tabs.
   state.save(false);
 
-  //Update tracked tab.
+  //Update tracked tab state property.
   let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
   tabTracker[tabIdx].state = state.get();
 
@@ -124,6 +128,9 @@ function showPageAction(tabId) {
   chrome.pageAction.show(tabId);
 }
 
+//Attach listener to tab creation event.
+//Add tab to tracker if it's url matches the search string.
+//Insert dark mode style sheet if extension is active.
 chrome.tabs.onCreated.addListener(tab => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     state.load();
@@ -136,6 +143,10 @@ chrome.tabs.onCreated.addListener(tab => {
   }
 });
 
+
+//Attach listener to tab update event.
+//Add tab to tracker if user navigated to learn.lambdaschoo.com.
+//Insert dark mode style sheet if extension is active.
 chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     state.load();
@@ -151,6 +162,8 @@ chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   }
 });
 
+//Attach listener to active tab event.
+//Insert/remove dark mode style sheet if needed.
 chrome.tabs.onHighlighted.addListener(highlightInfo => {
   let tabId = highlightInfo.tabIds[0];
   let tabIdx = tabTracker.findIndex(({ id }) => id === tabId);
@@ -170,8 +183,10 @@ chrome.tabs.onHighlighted.addListener(highlightInfo => {
   }
 });
 
+//Remove a previously tracked tab that has just been closed.
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   tabTracker = tabTracker.filter(tab => tab.id !== tabId);
 });
 
+//Callback for when the pageAction (extension icon in toolbar) is clicked.
 chrome.pageAction.onClicked.addListener(toggleCSS);
