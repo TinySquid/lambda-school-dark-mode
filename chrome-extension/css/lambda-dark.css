@@ -1,3 +1,4 @@
+/* There is some issue I'm having with the way chrome injects CSS compared to Firefox. So in the Chrome version (this one) I had to slap !important on everything... */
 .navbar-brand svg.d-block path.st1 {
   fill: firebrick !important;
 }
