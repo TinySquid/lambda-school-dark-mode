@@ -42,7 +42,7 @@ chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
   for (let tab of tabs) {
 
     //Add UNIQUE tabs to tabTracker.
-    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+    if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
 
       if (state.get()) {
@@ -126,7 +126,7 @@ function showPageAction(tabId) {
 chrome.tabs.onCreated.addListener(tab => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     state.load();
-    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+    if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
 
       console.log(`New tab added to tracker: (tab) ${tab.id}. (onCreated)`);
@@ -140,7 +140,7 @@ chrome.tabs.onCreated.addListener(tab => {
 chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
     state.load();
-    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+    if (tabTracker.findIndex(({ id }) => id === tab.id) === -1) {
       tabTracker.push({ id: tab.id, state: state.get() });
       console.log(`New tab added to tracker: (tab) ${tab.id}. (onUpdated)`);
     }
