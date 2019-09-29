@@ -36,7 +36,7 @@ function toggleCSS(tab) {
 
 //Inserts darkmode CSS, updates 'isEnabled' state.
 function enableCSS(tab) {
-  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/on.svg" });
+  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/lambda-48.png" });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_REMOVE });
   browser.tabs.insertCSS({ file: CSS_DARKMODE });
   isEnabled = true;
@@ -44,7 +44,7 @@ function enableCSS(tab) {
 
 //Removes darkmode CSS, updates 'isEnabled' state.
 function disableCSS(tab) {
-  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/off.svg" });
+  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/lambda-48-off.png" });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
   browser.tabs.removeCSS({ file: CSS_DARKMODE });
   isEnabled = false;
