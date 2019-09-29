@@ -15,7 +15,7 @@
     "persistent": false
   },
   "page_action": {
-    "default_icon": "icons/lambda-48.png",
-    "default_title": "Lambda School Darkmode"
+    "default_icon": "icons/off.png",
+    "default_title": "Enable Darkmode"
   }
 }

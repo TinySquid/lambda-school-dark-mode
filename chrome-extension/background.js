@@ -3,128 +3,175 @@ const TITLE_APPLY = "Enable Darkmode";
 const TITLE_REMOVE = "Disable Darkmode";
 
 //CSS location
-const CSS_DARKMODE = "css/lambda-dark.css";
+const CSS_PATH = "css/lambda-dark.css";
 
-//Global var for managing extension state across tabs and pages.
-let isEnabled = false;
-let lambdaTabs = [];
+//Singleton for extension state (enabled/disabled)
+const state = (function () {
+  let iState = false;
 
+  return {
+    save(newState) {
+      chrome.storage.local.set({
+        'isEnabled': newState
+      });
 
-function saveState(state) {
-  chrome.storage.local.set({
-    'isEnabled': state
-  });
-}
+      console.log(`New state saved: ${newState}`);
+    },
 
-//Loads the 'isEnabled' property from browser extension storage
-function loadState() {
-  chrome.storage.local.get('isEnabled', data => {
-    isEnabled = data.isEnabled;
-  });
-}
+    load() {
+      chrome.storage.local.get('isEnabled', data => {
+        iState = data.isEnabled;
+        console.log(`Loaded extension state (${data.isEnabled}) from storage.`);
+      });
+    },
 
-//Toggle CSS based on extension 'isEnabled' boolean.
-function toggleCSS(tab) {
-  if (isEnabled) {
-    // lambdaTabs.forEach(tab => {
-    //   disableCSS(tab);
-    //   chrome.tabs.reload(tab);
-    //   console.log(`tab ${tab} disabled darkmode.`);
-    // });
-    disableCSS(tab.id);
-    console.log(`tab ${tab.id} disabled darkmode.`);
-    chrome.tabs.reload(tab.id);
-  } else {
-    // lambdaTabs.forEach(tab => {
-    //   enableCSS(tab);
-    //   console.log(`tab ${tab} enabled darkmode.`);
-    // });
-    enableCSS(tab.id);
-    console.log(`tab ${tab.id} enabled darkmode.`);
+    get() {
+      return iState;
+    }
   }
+}());
 
-  //Update extension state
-  saveState(isEnabled);
+//Maintains list of open Lambda School tabs.
+let tabTracker = [];
+
+//Get state from browser storage.
+state.load();
+
+//Find tabs with matching url string.
+chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
+  for (let tab of tabs) {
+
+    //Add UNIQUE tabs to tabTracker.
+    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+      tabTracker.push({ id: tab.id, state: state.get() });
+
+      if (state.get()) {
+        enableCSS(tab.id);
+        console.log('init: enabled dark mode for tab ', tab.id);
+      }
+
+      //Enable page action for tracked tab.
+      showPageAction(tab.id);
+
+      console.log(`Existing tab added to tracker: (tab) ${tab.id}.`);
+    } else {
+      chrome.pageAction.hide(tab.id);
+    }
+  }
+  console.log(`tabTracker: `, tabTracker);
+});
+
+/**
+ * 
+ * @param {object} tab - Toggles our CSS for the tab in which the extension icon was clicked. 
+ */
+function toggleCSS(tab) {
+  console.log(`pageAction clicked on tabId: ${tab.id}, state: ${state.get()}`);
+  if (state.get()) {
+    enableCSS(tab.id);
+  } else {
+    disableCSS(tab.id);
+  }
 }
 
-//Inserts darkmode CSS, updates 'isEnabled' state.
+/**
+ * 
+ * @param {integer} tabId - Inserts the dark mode style sheet. 
+ */
 function enableCSS(tabId) {
+  console.log(`Enabled dark mode on tab ${tabId}.`);
+
+  //Change extension icon and title in toolbar.
   chrome.pageAction.setIcon({ 'tabId': tabId, 'path': "icons/on.png" });
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_REMOVE });
-  chrome.tabs.insertCSS({ file: CSS_DARKMODE });
-  isEnabled = true;
+
+  //Insert our dark mode style sheet.
+  chrome.tabs.insertCSS({ file: CSS_PATH });
+
+  //Enable page action for tracked tab.
+  showPageAction(tabId);
+
+  //Extension was enabled for a tab, so enable for all tabs.
+  state.save(true);
 }
 
-//Removes darkmode CSS, updates 'isEnabled' state.
+/**
+ * 
+ * @param {integer} tabId - Removes dark mode style sheet. 
+ */
 function disableCSS(tabId) {
+  //Change extension icon and title in toolbar.
   chrome.pageAction.setIcon({ 'tabId': tabId, 'path': "icons/off.png" });
   chrome.pageAction.setTitle({ 'tabId': tabId, 'title': TITLE_APPLY });
-  isEnabled = false;
+
+  //Extension was disabled for a tab, so disable for all tabs.
+  state.save(false);
+
+  //Because Chrome doesn't have a .removeCSS method, we will just reload the tab to trigger the onUpdated listener.
+  chrome.tabs.reload(tabId);
+
+  //Enable page action for tracked tab.
+  showPageAction(tabId);
+
 }
 
-/*
-Initialize page action by setting icon and title, then call pageAction.show.
-*/
-function initializePageAction(tabId) {
-  //Set or remove CSS based on state.
-  if (isEnabled) {
-    enableCSS(tabId);
-  } else {
-    disableCSS(tabId);
-  }
-
-  //Show page action icon.
+/**
+ * 
+ * @param {integer} tabId - Adds extension icon to the toolbar.
+ */
+function showPageAction(tabId) {
   chrome.pageAction.show(tabId);
 }
 
 chrome.tabs.onCreated.addListener(tab => {
   if (tab.url.search("learn.lambdaschool.com") !== -1) {
-    if (!lambdaTabs.includes(tab.id)) {
-      lambdaTabs.push(tab.id);
-      console.log(`New tab added to tracker: (tab) ${tab.id}.`);
+    state.load();
+    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+      tabTracker.push({ id: tab.id, state: state.get() });
+
+      console.log(`New tab added to tracker: (tab) ${tab.id}. (onCreated)`);
     }
-    //Get ext state first.
-    loadState();
-    initializePageAction(tab.id);
+    if (state.get()) {
+      enableCSS(tab.id);
+    }
   }
 })
 
 chrome.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-  if (lambdaTabs.includes(tab.id)) {
-    loadState();
-    console.log(`Tracked tab update event: (tab) ${tab.id}.`);
-    initializePageAction(tab.id);
-  } else if (tab.url.search("learn.lambdaschool.com") !== -1) {
-    loadState();
-    console.log(`Existing tab navigated to tracked site: (tab) ${tab.id}.`);
-    initializePageAction(tab.id);
-  }
-});
+  if (tab.url.search("learn.lambdaschool.com") !== -1) {
+    state.load();
+    if (!tabTracker.some(trackedTab => trackedTab.id === tab.id)) {
+      tabTracker.push({ id: tab.id, state: state.get() });
+      console.log(`New tab added to tracker: (tab) ${tab.id}. (onUpdated)`);
+    }
 
-chrome.tabs.onHighlighted.addListener(highlightInfo => {
-  // loadState();
-  // let tabIds = highlightInfo.tabIds;
-  // if (lambdaTabs.includes(tabIds[0])) {
-  //   initializePageAction(tabIds[0]);
+    if (state.get()) {
+      enableCSS(tab.id);
+    }
+  }
+  // if (tabTracker.includes(tab.id)) {
+  //   loadState();
+  //   console.log(`Tracked tab update event: (tab) ${tab.id}.`);
+  //   showPageAction(tab.id);
+  // } else if (tab.url.search("learn.lambdaschool.com") !== -1) {
+  //   loadState();
+  //   console.log(`Existing tab navigated to tracked site: (tab) ${tab.id}.`);
+  //   showPageAction(tab.id);
   // }
 });
 
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  if (lambdaTabs.includes(tabId)) {
-    let removedTab = lambdaTabs.splice(lambdaTabs.indexOf(tabId), 1);
-    console.log(`Untrack closed tab ID ${tabId} (removed: ${removedTab})`);
-  }
-})
+chrome.tabs.onHighlighted.addListener(highlightInfo => {
+  let tabId = highlightInfo.tabIds[0];
 
-//Find tabs with matching url string.
-chrome.tabs.query({ url: "*://learn.lambdaschool.com/*" }, tabs => {
-  for (let tab of tabs) {
-    if (!lambdaTabs.includes(tab.id)) {
-      lambdaTabs.push(tab.id);
-      console.log(`Existing tab added to tracker: (tab) ${tab.id}.`);
-      initializePageAction(tab.id);
+  if (tabTracker.findIndex(({ id }) => id === tabId) >= 0) {
+    if (state.get()) {
+      enableCSS(tabId);
     }
   }
+});
+
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  tabTracker = tabTracker.filter(tab => tab.id !== tabId);
 });
 
 chrome.pageAction.onClicked.addListener(toggleCSS);
