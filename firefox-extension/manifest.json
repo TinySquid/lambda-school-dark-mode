@@ -18,7 +18,7 @@
     "storage"
   ],
   "page_action": {
-    "default_icon": "icons/lambda-48.svg",
+    "default_icon": "icons/lambda-48.png",
     "default_title": "Lambda School Darkmode",
     "browser_style": true
   },
