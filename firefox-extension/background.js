@@ -1,27 +1,46 @@
-//Icon hover text
-const TITLE_APPLY = "Enable Darkmode";
-const TITLE_REMOVE = "Disable Darkmode";
+//pageAction icon state
+const ICON_ON = "icons/lambda-48.png";
+const ICON_OFF = "icons/lambda-48-off.png";
+
+//pageAction hover text
+const TITLE_APPLY = "Lambda School Darkmode (off)";
+const TITLE_REMOVE = "Lambda School Darkmode (on)";
 
 //CSS location
-const CSS_DARKMODE = "css/lambda-dark.css";
+const CSS_DARK_MODE = "css/lambda-dark.css";
 
 //Global var for managing extension state across tabs and pages.
 let isEnabled = false;
 
-//Saves the state into browser storage.
-function saveState(state) {
-  browser.storage.local.set({
-    'isEnabled': state
-  });
-}
+/*
+  A Singleton Pattern restricts the instantiation of a class to one "single" instance.
+  In JS, const will prevent changing the state, and making it a closure inside of an IIFE means it can never be re-defined or instantiated again.
+*/
+const state = (function () {
+  let iState = false;
 
-//Loads the 'isEnabled' property from browser extension storage
-function loadState() {
-  let storage = browser.storage.local.get('isEnabled');
-  storage.then((data) => {
-    isEnabled = data.isEnabled;
-  })
-}
+  return {
+    save(newState) {
+      browser.storage.local.set({
+        'isEnabled': newState
+      });
+      iState = newState;
+    },
+
+    load() {
+      //Firefox storage API returns a promise
+      let storage = browser.storage.local.get('isEnabled');
+      storage.then(data => {
+        iState = data.isEnabled;
+      })
+
+    },
+
+    get() {
+      return iState;
+    }
+  }
+}());
 
 //Toggle CSS based on extension 'isEnabled' boolean.
 function toggleCSS(tab) {
@@ -31,12 +50,12 @@ function toggleCSS(tab) {
     enableCSS(tab);
   }
   //Update extension state
-  saveState(isEnabled);
+  state.save(isEnabled);
 }
 
 //Inserts darkmode CSS, updates 'isEnabled' state.
 function enableCSS(tab) {
-  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/lambda-48.png" });
+  browser.pageAction.setIcon({ tabId: tab.id, path: ICON_ON });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_REMOVE });
   browser.tabs.insertCSS({ file: CSS_DARKMODE });
   isEnabled = true;
@@ -44,7 +63,7 @@ function enableCSS(tab) {
 
 //Removes darkmode CSS, updates 'isEnabled' state.
 function disableCSS(tab) {
-  browser.pageAction.setIcon({ tabId: tab.id, path: "icons/lambda-48-off.png" });
+  browser.pageAction.setIcon({ tabId: tab.id, path: ICON_OFF });
   browser.pageAction.setTitle({ tabId: tab.id, title: TITLE_APPLY });
   browser.tabs.removeCSS({ file: CSS_DARKMODE });
   isEnabled = false;
@@ -55,7 +74,7 @@ Initialize page action by setting icon and title, then call pageAction.show.
 */
 function initializePageAction(tab) {
   //Get ext state first.
-  loadState();
+  state.load();
 
   //Set or remove CSS based on state.
   if (isEnabled) {
